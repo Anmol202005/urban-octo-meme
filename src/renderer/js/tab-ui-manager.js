@@ -103,7 +103,14 @@ class TabUIManager {
             data: tabData
         });
 
-        this.tabsContainer.appendChild(tabElement);
+        // Insert before the new tab button, not at the end
+        const newTabBtn = document.getElementById('new-tab-btn');
+        if (newTabBtn) {
+            newTabBtn.insertAdjacentElement('beforebegin', tabElement);
+        } else {
+            this.tabsContainer.appendChild(tabElement);
+        }
+
         this.setActiveTab(tabData.id);
     }
 

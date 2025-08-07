@@ -1,4 +1,4 @@
-/* Modern Tab Components */
+/* Tab Components - No Red Colors Anywhere */
 
 /* Tab Bar */
 .tab-bar {
@@ -18,15 +18,15 @@
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-app-region: no-drag;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .tabs-container::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
 }
 
-/* Individual Tab - Modern Chrome-like styling */
+/* Individual Tab */
 .tab {
     background: var(--gray-300);
     border: none;
@@ -39,13 +39,11 @@
     align-items: center;
     position: relative;
     font-size: 13px;
-    transition: var(--transition-fast);
     height: 32px;
     border-radius: 8px 8px 0 0;
     margin-bottom: 0;
     flex-shrink: 0;
     overflow: hidden;
-    /* Modern tab shape */
     clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 100%, 0% 100%);
     margin-left: -12px;
     padding-left: 16px;
@@ -66,17 +64,6 @@
 
 .tab:hover:not(.active) {
     background: var(--gray-200);
-}
-
-.tab:not(.active)::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--gray-300);
-    z-index: 1;
 }
 
 /* Tab Elements */
@@ -123,34 +110,31 @@
     opacity: 0.7;
 }
 
+/* Close Button - Absolutely No Colors */
 .tab-close {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+    width: 16px;
+    height: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: var(--gray-500);
+    color: var(--gray-600);
     flex-shrink: 0;
     opacity: 0;
-    transition: all var(--transition-fast);
-    background: transparent;
+    background: none;
     border: none;
     position: relative;
     padding: 0;
     outline: none;
 }
 
-/* Create X using CSS pseudo-elements - no child elements to cause flicker */
 .tab-close::before,
 .tab-close::after {
     content: '';
     position: absolute;
-    width: 10px;
-    height: 1.5px;
-    background: currentColor;
-    border-radius: 1px;
+    width: 8px;
+    height: 1px;
+    background: var(--gray-600);
     top: 50%;
     left: 50%;
     transform-origin: center;
@@ -168,50 +152,7 @@
     opacity: 1;
 }
 
-.tab-close:hover {
-    background: var(--color-danger);
-    color: white;
-    transform: scale(1.1);
-}
-
-.tab-close:active {
-    transform: scale(0.95);
-}
-
-.tab-close:focus {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 1px;
-}
-
-/* Audio indicator */
-.tab-audio {
-    width: 16px;
-    height: 16px;
-    margin-right: var(--spacing-xs);
-    color: var(--color-primary);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-.tab.audio .tab-audio {
-    display: flex;
-}
-
-.tab.audio .tab-close {
-    display: none;
-}
-
-.tab.audio:hover .tab-close {
-    display: flex;
-}
-
-.tab.audio:hover .tab-audio {
-    display: none;
-}
-
-/* New Tab Button - Improved */
+/* New Tab Button */
 .new-tab-btn {
     background: transparent;
     border: none;
@@ -226,80 +167,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition-fast);
     -webkit-app-region: no-drag;
-    position: relative;
 }
 
 .new-tab-btn:hover {
     background: var(--gray-200);
     color: var(--gray-800);
-    transform: scale(1.1);
-}
-
-.new-tab-btn:active {
-    transform: scale(0.95);
-}
-
-/* Tab scrolling shadows */
-.tabs-container::before,
-.tabs-container::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 20px;
-    pointer-events: none;
-    z-index: 5;
-    transition: opacity var(--transition-fast);
-}
-
-.tabs-container::before {
-    left: 0;
-    background: linear-gradient(to right, var(--gray-100), transparent);
-    opacity: 0;
-}
-
-.tabs-container::after {
-    right: 40px; /* Account for new tab button */
-    background: linear-gradient(to left, var(--gray-100), transparent);
-    opacity: 0;
-}
-
-.tabs-container.scroll-left::before {
-    opacity: 1;
-}
-
-.tabs-container.scroll-right::after {
-    opacity: 1;
-}
-
-/* Pinned tab styles */
-.tab.pinned {
-    min-width: 40px;
-    max-width: 40px;
-    padding-left: var(--spacing-xs);
-    padding-right: var(--spacing-xs);
-}
-
-.tab.pinned .tab-title {
-    display: none;
-}
-
-.tab.pinned .tab-close {
-    display: none;
-}
-
-/* Tab drag and drop styles */
-.tab.dragging {
-    opacity: 0.8;
-    transform: rotate(5deg);
-    z-index: 100;
-}
-
-.tab.drag-over {
-    background: var(--color-primary);
-    color: white;
 }
 
 /* Mobile responsive */
@@ -315,8 +188,8 @@
     }
 
     .new-tab-btn {
-        width: 32px;
+        width: 28px;
         height: 24px;
-        font-size: 16px;
+        font-size: 14px;
     }
 }
