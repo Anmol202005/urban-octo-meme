@@ -1,4 +1,4 @@
-const { BrowserView, ipcMain } = require('electron');
+const { BrowserView, ipcMain, Menu } = require('electron');
 const { EVENTS, BROWSER } = require('../shared/constants');
 
 class TabManager {
@@ -162,6 +162,11 @@ class TabManager {
 
     setupViewEventHandlers(tabId, view) {
         const webContents = view.webContents;
+
+        // Context menu for web content
+        webContents.on('context-menu', (event, params) => {
+            this.showContextMenu(tabId, params);
+        });
 
         // Navigation events
         webContents.on('did-start-loading', () => {
@@ -332,6 +337,131 @@ class TabManager {
                 tab.view.webContents.stop();
             }
         }
+    }
+
+    showContextMenu(tabId, params) {
+        const tab = this.tabs.get(tabId);
+        if (!tab) return;
+
+        const template = [];
+
+        // Navigation items
+        template.push(
+            {
+                label: 'Back',
+                enabled: tab.view.webContents.canGoBack(),
+                click: () => tab.view.webContents.goBack()
+            },
+            {
+                label: 'Forward',
+                enabled: tab.view.webContents.canGoForward(),
+                click: () => tab.view.webContents.goForward()
+            },
+            {
+                label: 'Reload',
+                click: () => tab.view.webContents.reload()
+            },
+            { type: 'separator' }
+        );
+
+        // Text selection items
+        if (params.selectionText) {
+            template.push(
+                {
+                    label: 'Copy',
+                    click: () => tab.view.webContents.copy()
+                },
+                { type: 'separator' }
+            );
+        }
+
+        // Input field items
+        if (params.isEditable) {
+            template.push(
+                {
+                    label: 'Cut',
+                    enabled: params.selectionText,
+                    click: () => tab.view.webContents.cut()
+                },
+                {
+                    label: 'Copy',
+                    enabled: params.selectionText,
+                    click: () => tab.view.webContents.copy()
+                },
+                {
+                    label: 'Paste',
+                    click: () => tab.view.webContents.paste()
+                },
+                { type: 'separator' },
+                {
+                    label: 'Select All',
+                    click: () => tab.view.webContents.selectAll()
+                },
+                { type: 'separator' }
+            );
+        }
+
+        // Link items
+        if (params.linkURL) {
+            template.push(
+                {
+                    label: 'Open Link in New Tab',
+                    click: () => this.createTab(params.linkURL)
+                },
+                {
+                    label: 'Copy Link Address',
+                    click: () => {
+                        const { clipboard } = require('electron');
+                        clipboard.writeText(params.linkURL);
+                    }
+                },
+                { type: 'separator' }
+            );
+        }
+
+        // Image items
+        if (params.hasImageContents) {
+            template.push(
+                {
+                    label: 'Open Image in New Tab',
+                    click: () => this.createTab(params.srcURL)
+                },
+                {
+                    label: 'Copy Image Address',
+                    click: () => {
+                        const { clipboard } = require('electron');
+                        clipboard.writeText(params.srcURL);
+                    }
+                },
+                { type: 'separator' }
+            );
+        }
+
+        // Page items
+        template.push(
+            {
+                label: 'View Page Source',
+                click: () => {
+                    const url = tab.view.webContents.getURL();
+                    if (url && !url.startsWith('view-source:')) {
+                        this.createTab('view-source:' + url);
+                    }
+                }
+            },
+            {
+                label: 'Inspect Element',
+                click: () => {
+                    tab.view.webContents.inspectElement(params.x, params.y);
+                }
+            }
+        );
+
+        const menu = Menu.buildFromTemplate(template);
+        menu.popup({
+            window: this.window,
+            x: params.x,
+            y: params.y
+        });
     }
 }
 

@@ -12,6 +12,7 @@
 /* Component styles */
 @import url('./components/navigation.css');
 @import url('./components/tabs.css');
+@import url('./components/context-menu.css');
 
 /* Additional component imports can be added here as we build more features */
 /* @import url('./components/sidebar.css'); */

@@ -2,6 +2,7 @@ class Browser {
     constructor() {
         this.navigationManager = null;
         this.tabUIManager = null;
+        this.contextMenuManager = null;
         this.platform = null;
         this.isInitialized = false;
 
@@ -24,6 +25,7 @@ class Browser {
             // Initialize managers
             this.navigationManager = new NavigationManager();
             this.tabUIManager = new TabUIManager();
+            this.contextMenuManager = new ContextMenuManager();
 
             // Setup global event listeners
             this.setupGlobalEventListeners();
@@ -108,165 +110,202 @@ class Browser {
                         e.preventDefault();
                         this.newTab();
                         break;
+
+                    case 'f':
+                        e.preventDefault();
+                        this.showFindDialog();
+                        break;
                 }
             }
 
-            // Handle other shortcuts
+            // DevTools shortcut
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                this.toggleDevTools();
+            }
+
+        // Handle other shortcuts
+        switch (e.key) {
+            case 'F5':
+                e.preventDefault();
+                if (this.navigationManager) {
+                    this.navigationManager.refresh();
+                }
+                break;
+
+            case 'Escape':
+                this.handleEscape();
+                break;
+        }
+
+        // Navigation shortcuts
+        if (e.altKey) {
             switch (e.key) {
-                case 'F5':
+                case 'ArrowLeft':
                     e.preventDefault();
                     if (this.navigationManager) {
-                        this.navigationManager.refresh();
+                        this.navigationManager.goBack();
                     }
                     break;
 
-                case 'Escape':
-                    this.handleEscape();
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (this.navigationManager) {
+                        this.navigationManager.goForward();
+                    }
                     break;
             }
-
-            // Navigation shortcuts
-            if (e.altKey) {
-                switch (e.key) {
-                    case 'ArrowLeft':
-                        e.preventDefault();
-                        if (this.navigationManager) {
-                            this.navigationManager.goBack();
-                        }
-                        break;
-
-                    case 'ArrowRight':
-                        e.preventDefault();
-                        if (this.navigationManager) {
-                            this.navigationManager.goForward();
-                        }
-                        break;
-                }
-            }
-        });
-    }
-
-    focusAddressBar() {
-        const urlBar = document.getElementById('url-bar');
-        if (urlBar) {
-            urlBar.focus();
-            urlBar.select();
         }
-    }
+    });
+}
 
-    newTab(url = null) {
-        if (this.tabUIManager) {
-            this.tabUIManager.createNewTab(url);
-        } else {
-            console.log('Tab UI Manager not available');
+focusAddressBar() {
+    const urlBar = document.getElementById('url-bar');
+    if (urlBar) {
+        urlBar.focus();
+        urlBar.select();
+    }
+}
+
+newTab(url = null) {
+    if (this.tabUIManager) {
+        this.tabUIManager.createNewTab(url);
+    } else {
+        console.log('Tab UI Manager not available');
+    }
+}
+
+closeCurrentTab() {
+    if (this.tabUIManager) {
+        const activeTabId = this.tabUIManager.getActiveTabId();
+        if (activeTabId) {
+            this.tabUIManager.closeTab(activeTabId);
         }
+    } else {
+        console.log('Tab UI Manager not available');
+    }
+}
+
+handleEscape() {
+    // Stop loading if in progress
+    if (this.navigationManager && this.navigationManager.isLoading) {
+        // TODO: Stop loading
     }
 
-    closeCurrentTab() {
-        if (this.tabUIManager) {
-            const activeTabId = this.tabUIManager.getActiveTabId();
-            if (activeTabId) {
-                this.tabUIManager.closeTab(activeTabId);
-            }
-        } else {
-            console.log('Tab UI Manager not available');
+    // Clear focus from address bar
+    const urlBar = document.getElementById('url-bar');
+    if (urlBar && document.activeElement === urlBar) {
+        urlBar.blur();
+    }
+}
+
+updateConnectionStatus(isOnline) {
+    document.body.classList.toggle('offline', !isOnline);
+
+    if (!isOnline) {
+        this.showNotification('You are currently offline', 'warning');
+    }
+}
+
+showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+
+    // Style the notification
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        background: type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#007bff',
+        color: type === 'warning' ? '#000' : '#fff',
+        padding: '12px 16px',
+        borderRadius: '4px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        zIndex: '10000',
+        fontSize: '14px',
+        maxWidth: '300px'
+    });
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
         }
+    }, 3000);
+}
+
+showError(message) {
+    console.error(message);
+    this.showNotification(message, 'error');
+}
+
+cleanup() {
+    // Cleanup resources before unload
+    console.log('Browser cleanup');
+}
+
+// Public API methods
+navigate(url) {
+    if (this.navigationManager) {
+        this.navigationManager.navigateToUrl(url);
     }
+}
 
-    handleEscape() {
-        // Stop loading if in progress
-        if (this.navigationManager && this.navigationManager.isLoading) {
-            // TODO: Stop loading
-        }
-
-        // Clear focus from address bar
-        const urlBar = document.getElementById('url-bar');
-        if (urlBar && document.activeElement === urlBar) {
-            urlBar.blur();
-        }
+goBack() {
+    if (this.navigationManager) {
+        this.navigationManager.goBack();
     }
+}
 
-    updateConnectionStatus(isOnline) {
-        document.body.classList.toggle('offline', !isOnline);
-
-        if (!isOnline) {
-            this.showNotification('You are currently offline', 'warning');
-        }
+goForward() {
+    if (this.navigationManager) {
+        this.navigationManager.goForward();
     }
+}
 
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-
-        // Style the notification
-        Object.assign(notification.style, {
-            position: 'fixed',
-            top: '10px',
-            right: '10px',
-            background: type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#007bff',
-            color: type === 'warning' ? '#000' : '#fff',
-            padding: '12px 16px',
-            borderRadius: '4px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            zIndex: '10000',
-            fontSize: '14px',
-            maxWidth: '300px'
-        });
-
-        document.body.appendChild(notification);
-
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 3000);
+refresh() {
+    if (this.navigationManager) {
+        this.navigationManager.handleRefreshClick();
     }
+}
 
-    showError(message) {
-        console.error(message);
-        this.showNotification(message, 'error');
-    }
+getCurrentUrl() {
+    return this.navigationManager ? this.navigationManager.getCurrentUrl() : '';
+}
 
-    cleanup() {
-        // Cleanup resources before unload
-        console.log('Browser cleanup');
-    }
+getCurrentTitle() {
+    return this.navigationManager ? this.navigationManager.getCurrentTitle() : '';
+}
 
-    // Public API methods
-    navigate(url) {
-        if (this.navigationManager) {
-            this.navigationManager.navigateToUrl(url);
-        }
+// Developer Tools
+async toggleDevTools() {
+    if (window.electronAPI) {
+        await window.electronAPI.toggleDevTools();
     }
+}
 
-    goBack() {
-        if (this.navigationManager) {
-            this.navigationManager.goBack();
-        }
+async openDevTools() {
+    if (window.electronAPI) {
+        await window.electronAPI.openDevTools();
     }
+}
 
-    goForward() {
-        if (this.navigationManager) {
-            this.navigationManager.goForward();
-        }
+async closeDevTools() {
+    if (window.electronAPI) {
+        await window.electronAPI.closeDevTools();
     }
+}
 
-    refresh() {
-        if (this.navigationManager) {
-            this.navigationManager.handleRefreshClick();
-        }
+// Find functionality
+showFindDialog() {
+    if (this.contextMenuManager) {
+        this.contextMenuManager.showFindDialog();
     }
-
-    getCurrentUrl() {
-        return this.navigationManager ? this.navigationManager.getCurrentUrl() : '';
-    }
-
-    getCurrentTitle() {
-        return this.navigationManager ? this.navigationManager.getCurrentTitle() : '';
-    }
+}
 }
 
 // Export for use in other modules

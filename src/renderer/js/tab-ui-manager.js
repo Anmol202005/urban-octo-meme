@@ -154,11 +154,6 @@ class TabUIManager {
             }
         });
 
-        // Prevent context menu for cleaner look
-        tab.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        });
-
         tab.appendChild(favicon);
         tab.appendChild(title);
         tab.appendChild(audioIndicator);

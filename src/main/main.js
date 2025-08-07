@@ -1,4 +1,4 @@
-const { app, ipcMain, Menu } = require('electron');
+const { app, ipcMain, Menu, clipboard } = require('electron');
 const WindowManager = require('./window-manager');
 const { EVENTS } = require('../shared/constants');
 
@@ -78,6 +78,91 @@ class BrowserApp {
                 }
             }
         });
+
+        // Developer Tools handlers
+        ipcMain.handle('open-devtools', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    activeTab.view.webContents.openDevTools();
+                }
+            }
+        });
+
+        ipcMain.handle('close-devtools', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    activeTab.view.webContents.closeDevTools();
+                }
+            }
+        });
+
+        ipcMain.handle('toggle-devtools', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    activeTab.view.webContents.toggleDevTools();
+                }
+            }
+        });
+
+        // Context menu handlers
+        ipcMain.handle('copy-text', (event, text) => {
+            if (text) {
+                clipboard.writeText(text);
+            }
+        });
+
+        ipcMain.handle('paste-text', () => {
+            return clipboard.readText();
+        });
+
+        ipcMain.handle('select-all', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    activeTab.view.webContents.selectAll();
+                }
+            }
+        });
+
+        ipcMain.handle('find-in-page', (event, text) => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab && text) {
+                    activeTab.view.webContents.findInPage(text);
+                }
+            }
+        });
+
+        ipcMain.handle('print', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    activeTab.view.webContents.print();
+                }
+            }
+        });
+
+        ipcMain.handle('view-source', () => {
+            const activeWindow = this.windowManager.getActiveWindow();
+            if (activeWindow && activeWindow.tabManager && activeWindow.tabManager.activeTabId) {
+                const activeTab = activeWindow.tabManager.tabs.get(activeWindow.tabManager.activeTabId);
+                if (activeTab) {
+                    const url = activeTab.view.webContents.getURL();
+                    if (url && !url.startsWith('view-source:')) {
+                        activeWindow.tabManager.createTab('view-source:' + url);
+                    }
+                }
+            }
+        });
     }
 
     createMainWindow() {
@@ -85,43 +170,16 @@ class BrowserApp {
             title: 'My Browser'
         });
 
+        // Force remove menu after window creation
+        window.setMenuBarVisibility(false);
+        window.setAutoHideMenuBar(true);
+
         return window;
     }
 
     setupApplicationMenu() {
         // Completely remove menu bar on all platforms
         Menu.setApplicationMenu(null);
-    }
-
-    createMinimalMacMenu() {
-        const template = [
-            {
-                label: app.getName(),
-                submenu: [
-                    { role: 'about' },
-                    { type: 'separator' },
-                    { role: 'hide' },
-                    { role: 'hideothers' },
-                    { role: 'unhide' },
-                    { type: 'separator' },
-                    { role: 'quit' }
-                ]
-            },
-            {
-                label: 'Edit',
-                submenu: [
-                    { role: 'undo' },
-                    { role: 'redo' },
-                    { type: 'separator' },
-                    { role: 'cut' },
-                    { role: 'copy' },
-                    { role: 'paste' }
-                ]
-            }
-        ];
-
-        const menu = Menu.buildFromTemplate(template);
-        Menu.setApplicationMenu(menu);
     }
 }
 

@@ -21,6 +21,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
     tabReload: () => ipcRenderer.invoke('tab-reload'),
     tabStop: () => ipcRenderer.invoke('tab-stop'),
 
+    // Developer Tools
+    openDevTools: () => ipcRenderer.invoke('open-devtools'),
+    closeDevTools: () => ipcRenderer.invoke('close-devtools'),
+    toggleDevTools: () => ipcRenderer.invoke('toggle-devtools'),
+
+    // Context menu actions
+    copyText: (text) => ipcRenderer.invoke('copy-text', text),
+    pasteText: () => ipcRenderer.invoke('paste-text'),
+    selectAll: () => ipcRenderer.invoke('select-all'),
+    findInPage: (text) => ipcRenderer.invoke('find-in-page', text),
+    print: () => ipcRenderer.invoke('print'),
+    viewSource: () => ipcRenderer.invoke('view-source'),
+
     // Event listeners for tab events
     onTabCreated: (callback) => {
         ipcRenderer.on('tab-created', (event, data) => callback(data));
