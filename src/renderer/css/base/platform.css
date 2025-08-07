@@ -1,0 +1,47 @@
+/* Platform-specific styles */
+
+/* macOS Styles */
+.platform-darwin .browser-header {
+    padding-left: 80px; /* Space for traffic lights */
+}
+
+.platform-darwin .tab-bar {
+    padding-left: 80px; /* Ensure tabs don't overlap traffic lights */
+}
+
+.platform-darwin .nav-button {
+    border-radius: var(--border-radius-lg);
+}
+
+/* Windows Styles */
+.platform-win32 .tab {
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+}
+
+.platform-win32 .nav-button {
+    border-radius: var(--border-radius-sm);
+}
+
+/* Linux Styles */
+.platform-linux .nav-button {
+    border-radius: var(--border-radius);
+}
+
+/* Window State Styles */
+.window-focused {
+    /* Styles when window is focused */
+}
+
+.window-focused .browser-header {
+    background: var(--gray-100);
+}
+
+/* Offline State */
+.offline .navigation-bar {
+    background: var(--color-warning);
+    color: #000;
+}
+
+.offline .nav-button {
+    background: rgba(255, 255, 255, 0.8);
+}

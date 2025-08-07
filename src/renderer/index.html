@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Browser</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<!-- Browser Header with Tabs -->
+<div class="browser-header">
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <div class="tabs-container" id="tabs-container">
+            <!-- Tabs will be dynamically added here -->
+        </div>
+        <button class="new-tab-btn" id="new-tab-btn" title="New tab">+</button>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navigation-bar">
+        <div class="nav-controls">
+            <button class="nav-button" id="back-btn" title="Go back" disabled>
+                ←
+            </button>
+            <button class="nav-button" id="forward-btn" title="Go forward" disabled>
+                →
+            </button>
+            <button class="nav-button" id="refresh-btn" title="Refresh">
+                ↻
+            </button>
+        </div>
+
+        <div class="url-container">
+            <input
+                    type="text"
+                    class="url-bar"
+                    id="url-bar"
+                    placeholder="Search or enter web address"
+                    autocomplete="off"
+                    spellcheck="false"
+            >
+        </div>
+    </nav>
+</div>
+
+<!-- Content Area -->
+<main class="content-area" id="content">
+    <div class="welcome-screen">
+        <div class="welcome-logo">🌐</div>
+        <h1 class="welcome-subtitle">Welcome to My Browser</h1>
+        <input
+                type="text"
+                class="quick-search"
+                id="quick-search"
+                placeholder="Search the web or enter a URL"
+                autocomplete="off"
+                spellcheck="false"
+        >
+    </div>
+</main>
+
+<!-- Scripts -->
+<script src="js/navigation.js"></script>
+<script src="js/tab-ui-manager.js"></script>
+<script src="js/browser.js"></script>
+<script>
+    // Initialize the browser
+    const browser = new Browser();
+
+    // Make browser instance globally available for debugging
+    window.browser = browser;
+</script>
+</body>
+</html>

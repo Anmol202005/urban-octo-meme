@@ -1,0 +1,20 @@
+/* Main Styles - Import all CSS modules */
+
+/* Base styles */
+@import url('./base/variables.css');
+@import url('./base/reset.css');
+@import url('./base/platform.css');
+@import url('./base/responsive.css');
+
+/* Layout styles */
+@import url('./layout/layout.css');
+
+/* Component styles */
+@import url('./components/navigation.css');
+@import url('./components/tabs.css');
+
+/* Additional component imports can be added here as we build more features */
+/* @import url('./components/sidebar.css'); */
+/* @import url('./components/bookmarks.css'); */
+/* @import url('./components/downloads.css'); */
+/* @import url('./components/settings.css'); */

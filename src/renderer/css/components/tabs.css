@@ -1,0 +1,125 @@
+/* Tab Components */
+
+/* Tab Bar */
+.tab-bar {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm) 0 var(--spacing-sm);
+    background: var(--gray-100);
+    min-height: var(--tab-height);
+}
+
+.tabs-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-app-region: no-drag;
+}
+
+/* Individual Tab */
+.tab {
+    background: var(--gray-200);
+    border: 1px solid var(--gray-300);
+    border-bottom: none;
+    padding: var(--spacing-xs) var(--spacing-md);
+    margin-right: 2px;
+    cursor: pointer;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    max-width: 240px;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    font-size: 13px;
+    transition: var(--transition-fast);
+    height: 32px;
+}
+
+.tab.active {
+    background: #ffffff;
+    border-color: var(--gray-500);
+    z-index: 2;
+    margin-bottom: -1px;
+}
+
+.tab:hover:not(.active) {
+    background: var(--gray-300);
+}
+
+/* Tab Elements */
+.tab-favicon {
+    width: 16px;
+    height: 16px;
+    margin-right: var(--spacing-sm);
+    background: var(--gray-600);
+    border-radius: var(--border-radius-sm);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+}
+
+.tab-title {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: var(--spacing-sm);
+    color: var(--gray-700);
+}
+
+.tab.loading .tab-title {
+    opacity: 0.7;
+}
+
+.tab-close {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--gray-600);
+    flex-shrink: 0;
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.tab:hover .tab-close {
+    opacity: 1;
+}
+
+.tab-close:hover {
+    background: var(--color-danger);
+    color: white;
+}
+
+/* New Tab Button */
+.new-tab-btn {
+    background: var(--gray-200);
+    border: 1px solid var(--gray-300);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    border-radius: var(--border-radius-lg);
+    font-size: 16px;
+    line-height: 1;
+    color: var(--gray-600);
+    margin-left: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+    -webkit-app-region: no-drag;
+}
+
+.new-tab-btn:hover {
+    background: var(--gray-300);
+    color: var(--gray-700);
+}

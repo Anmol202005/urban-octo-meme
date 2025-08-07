@@ -1,0 +1,78 @@
+/* Responsive Design */
+
+/* Mobile and Small Screens */
+@media (max-width: 768px) {
+    .navigation-bar {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        gap: var(--spacing-xs);
+    }
+
+    .nav-button {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 12px;
+        min-width: 28px;
+    }
+
+    .url-bar {
+        padding: var(--spacing-xs) 10px;
+        font-size: 13px;
+    }
+
+    .tab {
+        min-width: 100px;
+        max-width: 180px;
+        padding: var(--spacing-xs) 10px;
+    }
+
+    .tab-title {
+        font-size: 12px;
+    }
+
+    .welcome-logo {
+        font-size: 36px;
+    }
+
+    .quick-search {
+        width: 90%;
+        padding: 10px var(--spacing-lg);
+        font-size: 15px;
+    }
+}
+
+/* Large Screens */
+@media (min-width: 1400px) {
+    .tab {
+        max-width: 300px;
+    }
+
+    .url-bar {
+        font-size: 15px;
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+    .tab-favicon,
+    .nav-button {
+        /* Ensure crisp rendering on high DPI displays */
+        image-rendering: -webkit-optimize-contrast;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .loading::after {
+        animation: none;
+        background: var(--color-primary);
+    }
+}
+
+/* Dark Mode Support (for future implementation) */
+@media (prefers-color-scheme: dark) {
+    /* Dark mode variables can be defined here */
+}
