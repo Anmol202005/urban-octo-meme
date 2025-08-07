@@ -27,7 +27,29 @@ class TabUIManager {
         this.tabsContainer.addEventListener('wheel', (e) => {
             e.preventDefault();
             this.tabsContainer.scrollLeft += e.deltaY;
+            this.updateScrollIndicators();
         });
+
+        // Update scroll indicators on scroll
+        this.tabsContainer.addEventListener('scroll', () => {
+            this.updateScrollIndicators();
+        });
+
+        // Double click on tab bar to create new tab
+        this.tabsContainer.addEventListener('dblclick', (e) => {
+            if (e.target === this.tabsContainer) {
+                this.createNewTab();
+            }
+        });
+    }
+
+    updateScrollIndicators() {
+        const container = this.tabsContainer;
+        const canScrollLeft = container.scrollLeft > 0;
+        const canScrollRight = container.scrollLeft < container.scrollWidth - container.clientWidth;
+
+        container.classList.toggle('scroll-left', canScrollLeft);
+        container.classList.toggle('scroll-right', canScrollRight);
     }
 
     setupIpcListeners() {
@@ -99,10 +121,21 @@ class TabUIManager {
         title.textContent = tabData.title || 'New Tab';
         title.title = tabData.title || 'New Tab';
 
-        const closeBtn = document.createElement('div');
+        const closeBtn = document.createElement('button');
         closeBtn.className = 'tab-close';
-        closeBtn.textContent = '×';
         closeBtn.title = 'Close tab';
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', 'Close tab');
+        closeBtn.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    `;
+
+        // Audio indicator (for future use)
+        const audioIndicator = document.createElement('div');
+        audioIndicator.className = 'tab-audio';
+        audioIndicator.textContent = '🔊';
 
         // Event listeners
         tab.addEventListener('click', (e) => {
@@ -116,8 +149,22 @@ class TabUIManager {
             this.closeTab(tabData.id);
         });
 
+        // Middle click to close
+        tab.addEventListener('mousedown', (e) => {
+            if (e.button === 1) { // Middle mouse button
+                e.preventDefault();
+                this.closeTab(tabData.id);
+            }
+        });
+
+        // Prevent context menu for cleaner look
+        tab.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+
         tab.appendChild(favicon);
         tab.appendChild(title);
+        tab.appendChild(audioIndicator);
         tab.appendChild(closeBtn);
 
         return tab;
@@ -212,12 +259,15 @@ class TabUIManager {
     setTabLoading(tabId, loading) {
         const tab = this.tabs.get(tabId);
         if (tab) {
+            const favicon = tab.element.querySelector('.tab-favicon');
+
             if (loading) {
                 tab.element.classList.add('loading');
-                const favicon = tab.element.querySelector('.tab-favicon');
-                favicon.textContent = '⏳';
+                favicon.classList.add('loading');
+                favicon.textContent = '⟳';
             } else {
                 tab.element.classList.remove('loading');
+                favicon.classList.remove('loading');
                 // Restore favicon based on URL
                 this.updateTabUrl(tabId, tab.data.url);
             }

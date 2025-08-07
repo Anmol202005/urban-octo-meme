@@ -69,10 +69,8 @@ class TabManager {
         // Setup view event handlers
         this.setupViewEventHandlers(tabId, view);
 
-        // Set as active tab if it's the first one or no active tab
-        if (this.tabs.size === 1 || !this.activeTabId) {
-            this.switchToTab(tabId);
-        }
+        // Always set new tab as active
+        this.switchToTab(tabId);
 
         // Navigate to URL if provided
         if (url && url !== BROWSER.DEFAULT_HOME_URL) {
@@ -107,6 +105,8 @@ class TabManager {
                 this.switchToTab(remainingTabs[0]);
             } else {
                 this.activeTabId = null;
+                // Close the window when no tabs remain
+                this.window.close();
             }
         }
 

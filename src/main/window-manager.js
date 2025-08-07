@@ -57,6 +57,30 @@ class WindowManager {
             }
         });
 
+        // Handle window close attempt
+        window.on('close', (event) => {
+            // Check if there are tabs open
+            if (window.tabManager && window.tabManager.tabs.size > 1) {
+                // Optional: Show confirmation dialog for multiple tabs
+                // For now, we'll allow closing without confirmation
+                // Uncomment below to add confirmation:
+
+                const { dialog } = require('electron');
+                const choice = dialog.showMessageBoxSync(window, {
+                  type: 'question',
+                  buttons: ['Close', 'Cancel'],
+                  defaultId: 0,
+                  message: 'Close browser with multiple tabs open?'
+                });
+
+                if (choice === 1) {
+                  event.preventDefault();
+                  return;
+                }
+
+            }
+        });
+
         // Handle window closed
         window.on('closed', () => {
             this.windows.delete(windowId);
