@@ -1,4 +1,4 @@
-const { app, ipcMain } = require('electron');
+const { app, ipcMain, Menu } = require('electron');
 const WindowManager = require('./window-manager');
 const { EVENTS } = require('../shared/constants');
 
@@ -9,8 +9,9 @@ class BrowserApp {
     }
 
     setupEventHandlers() {
-        // App lifecycle events
+        // Remove menu bar immediately when app is ready
         app.whenReady().then(() => {
+            this.setupApplicationMenu();
             this.createMainWindow();
         });
 
@@ -85,6 +86,42 @@ class BrowserApp {
         });
 
         return window;
+    }
+
+    setupApplicationMenu() {
+        // Completely remove menu bar on all platforms
+        Menu.setApplicationMenu(null);
+    }
+
+    createMinimalMacMenu() {
+        const template = [
+            {
+                label: app.getName(),
+                submenu: [
+                    { role: 'about' },
+                    { type: 'separator' },
+                    { role: 'hide' },
+                    { role: 'hideothers' },
+                    { role: 'unhide' },
+                    { type: 'separator' },
+                    { role: 'quit' }
+                ]
+            },
+            {
+                label: 'Edit',
+                submenu: [
+                    { role: 'undo' },
+                    { role: 'redo' },
+                    { type: 'separator' },
+                    { role: 'cut' },
+                    { role: 'copy' },
+                    { role: 'paste' }
+                ]
+            }
+        ];
+
+        const menu = Menu.buildFromTemplate(template);
+        Menu.setApplicationMenu(menu);
     }
 }
 

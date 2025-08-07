@@ -23,9 +23,9 @@ class WindowManager {
                 webSecurity: true
             },
             show: false, // Don't show until ready
+            frame: true, // Keep window frame but remove menu
+            autoHideMenuBar: true, // This combined with Menu.setApplicationMenu(null) should work
             titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-            autoHideMenuBar: true, // Hide menu bar (can be toggled with Alt)
-            menuBarVisible: false, // Start with menu bar hidden
             ...options
         };
 
