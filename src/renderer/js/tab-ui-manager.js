@@ -126,11 +126,8 @@ class TabUIManager {
         closeBtn.title = 'Close tab';
         closeBtn.type = 'button';
         closeBtn.setAttribute('aria-label', 'Close tab');
-        closeBtn.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    `;
+        // Use CSS-only approach for better hover behavior
+        closeBtn.innerHTML = '';  // Empty - styled with CSS pseudo-elements
 
         // Audio indicator (for future use)
         const audioIndicator = document.createElement('div');
