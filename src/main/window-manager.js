@@ -24,6 +24,8 @@ class WindowManager {
             },
             show: false, // Don't show until ready
             titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+            autoHideMenuBar: true, // Hide menu bar (can be toggled with Alt)
+            menuBarVisible: false, // Start with menu bar hidden
             ...options
         };
 
