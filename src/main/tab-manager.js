@@ -72,8 +72,17 @@ class TabManager {
         // Always set new tab as active
         this.switchToTab(tabId);
 
-        // Navigate to URL if provided
-        if (url && url !== BROWSER.DEFAULT_HOME_URL) {
+        // Navigate to URL
+        if (url === BROWSER.DEFAULT_HOME_URL || url === 'browser://newtab') {
+            // Load the home page HTML file
+            const path = require('path');
+            const homePagePath = path.join(__dirname, '../renderer/home.html');
+            view.webContents.loadFile(homePagePath);
+
+            // Update tab info for home page
+            tabInfo.url = 'browser://newtab';
+            tabInfo.title = 'New Tab';
+        } else {
             this.navigateTab(tabId, url);
         }
 
@@ -146,6 +155,23 @@ class TabManager {
 
         // Process URL (add protocol if needed)
         url = this.processUrl(url);
+
+        // Handle special URLs
+        if (url === 'browser://newtab' || url === 'about:newtab') {
+            // Load home page
+            const path = require('path');
+            const homePagePath = path.join(__dirname, '../renderer/home.html');
+            tab.view.webContents.loadFile(homePagePath);
+
+            // Update tab info
+            tab.url = 'browser://newtab';
+            tab.title = 'New Tab';
+            tab.loading = false;
+
+            this.notifyRenderer('tab-url-updated', { tabId, url: 'browser://newtab' });
+            this.notifyRenderer('tab-title-updated', { tabId, title: 'New Tab' });
+            return true;
+        }
 
         // Update tab info
         tab.url = url;
@@ -258,13 +284,18 @@ class TabManager {
 
         input = input.trim();
 
+        // Handle special browser URLs
+        if (input === 'newtab' || input === 'home') {
+            return 'browser://newtab';
+        }
+
         // If it looks like a search query
         if (!input.includes('.') && !input.includes('://')) {
             return BROWSER.DEFAULT_SEARCH_ENGINE + encodeURIComponent(input);
         }
 
         // Add protocol if missing
-        if (!input.startsWith('http://') && !input.startsWith('https://')) {
+        if (!input.startsWith('http://') && !input.startsWith('https://') && !input.startsWith('browser://')) {
             return 'https://' + input;
         }
 

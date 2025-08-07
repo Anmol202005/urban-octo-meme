@@ -1,4 +1,16 @@
-class NavigationManager {
+window.electronAPI.onTabClosed((data) => {
+    // Check if any tabs remain
+    window.electronAPI.getTabs().then(tabs => {
+        if (tabs.length === 0) {
+            // Show welcome screen when no tabs
+            this.showWelcomeScreen();
+            this.urlBar.value = '';
+            this.canGoBack = false;
+            this.canGoForward = false;
+            this.updateNavigationButtons();
+        }
+    });
+});class NavigationManager {
     constructor() {
         this.currentUrl = '';
         this.currentTitle = 'New Tab';
@@ -71,7 +83,14 @@ class NavigationManager {
 
             window.electronAPI.onTabUrlUpdated((data) => {
                 this.currentUrl = data.url;
-                this.urlBar.value = data.url;
+
+                // Don't show internal URLs or file paths in the address bar
+                if (data.url === 'browser://newtab' || !data.url || data.url.includes('home.html') || data.url.startsWith('file://')) {
+                    this.urlBar.value = '';
+                    this.urlBar.placeholder = 'Search or enter URL';
+                } else {
+                    this.urlBar.value = data.url;
+                }
             });
 
             window.electronAPI.onTabTitleUpdated((data) => {
@@ -86,18 +105,38 @@ class NavigationManager {
                 this.canGoForward = data.canGoForward;
                 this.isLoading = data.loading;
 
-                this.urlBar.value = data.url;
-                document.title = data.title;
+                // Handle URL bar display for home page
+                if (data.url === 'browser://newtab' || !data.url || data.url.includes('home.html')) {
+                    this.urlBar.value = '';
+                    this.urlBar.placeholder = 'Search or enter URL';
+                    this.currentUrl = 'browser://newtab'; // Ensure consistent internal URL
+                } else {
+                    this.urlBar.value = data.url;
+                    this.urlBar.placeholder = 'Search or enter URL';
+                }
+
+                document.title = data.title || 'New Tab';
                 this.updateNavigationButtons();
                 this.setLoading(data.loading);
-
-                // Hide welcome screen when tab is active
-                this.hideWelcomeScreen();
             });
 
             window.electronAPI.onTabCreated((data) => {
                 // Hide welcome screen when first tab is created
                 this.hideWelcomeScreen();
+            });
+
+            window.electronAPI.onTabClosed((data) => {
+                // Check if any tabs remain
+                window.electronAPI.getTabs().then(tabs => {
+                    if (tabs.length === 0) {
+                        // Show welcome screen when no tabs
+                        this.showWelcomeScreen();
+                        this.urlBar.value = '';
+                        this.canGoBack = false;
+                        this.canGoForward = false;
+                        this.updateNavigationButtons();
+                    }
+                });
             });
         }
     }
@@ -106,6 +145,12 @@ class NavigationManager {
         if (!input) return;
 
         try {
+            // Handle special home page URLs
+            if (input === 'newtab' || input === 'home' || input === 'new tab') {
+                await window.electronAPI.navigateUrl('browser://newtab');
+                return;
+            }
+
             // Use IPC to tell main process to navigate
             await window.electronAPI.navigateUrl(input);
 
@@ -173,9 +218,12 @@ class NavigationManager {
     }
 
     hideWelcomeScreen() {
-        const welcomeScreen = document.querySelector('.welcome-screen');
-        if (welcomeScreen) {
-            welcomeScreen.style.display = 'none';
+        // Only hide if we're not on the home page
+        if (this.currentUrl && this.currentUrl !== 'browser://newtab') {
+            const welcomeScreen = document.querySelector('.welcome-screen');
+            if (welcomeScreen) {
+                welcomeScreen.style.display = 'none';
+            }
         }
     }
 

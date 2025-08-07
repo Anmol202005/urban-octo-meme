@@ -7,7 +7,7 @@ module.exports = {
   },
 
   BROWSER: {
-    DEFAULT_HOME_URL: 'browser://home',
+    DEFAULT_HOME_URL: 'browser://newtab',
     DEFAULT_SEARCH_ENGINE: 'https://www.google.com/search?q=',
     HEADER_HEIGHT: 80, // Must match CSS --header-height
     TAB_HEIGHT: 36,    // Must match CSS --tab-height
